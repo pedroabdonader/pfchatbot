@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Pfizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts Link For Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
+    <link rel="icon" type="image/png" href="../static/assets/favicon.svg">
+    <script src="{{ url_for('static', filename='script.js') }}" type="module" defer></script>
+  </head>
+  <body>
+    <button class="chatbot-toggler">
+      <span class="material-symbols-rounded" id="chat_icon">mode_comment</span>
+      <span class="material-symbols-outlined" id="close_icon">close</span>
+    </button>
+    <div class="chatbot">
+      <header>
+        <img src="../static/assets/assistant_icon.png" alt="">
+        <span class="close-btn material-symbols-outlined">close</span>
+        <p>Clear Chat</p>
+      </header>
+      <ul class="chatbox">
+        <li class="chat incoming">
+          <span class="material-symbols-outlined">support_agent</span>
+          <p>Hi there 👋<br>How can I help you today?</p>
+        </li>
+        <li class="initial_journeys">
+          <div class="card copay_card">
+            <div class="title">
+              <span class="light_blue material-symbols-outlined">badge</span>
+              <h4>Copay Card Enrollment</h4>
+            </div>
+            <p class="description">I want to enroll for a Copay Card today.</p>
+          </div>
+          <div class="card payments">
+            <div class="title">
+              <span class="light_blue material-symbols-outlined">payments</span>
+              <h4>Financial Assistance</h4>
+            </div>
+            <p class="description">What are my options if I can't afford my Medication?</p>
+          </div>
+          <div class="card refill">
+            <div class="title">
+              <span class="light_blue material-symbols-outlined">prescriptions</span>
+              <h4>Request Medication Refill</h4>
+            </div>
+            <p class="description">I need to request a medication refill.</p>
+          </div>
+          <div class="card general_question">
+            <div class="title">
+              <span class="light_blue material-symbols-outlined">info</span>
+              <h4>General Medical Question</h4>
+            </div>
+            <p class="description">I have a few questions about my medication.</p>
+          </div>
+        </li>
+      </ul>
+      <div class="chat-input">
+        <textarea class='text_area' placeholder="Something else..." spellcheck="false" required></textarea>
+        <span id="send-btn" class="material-symbols-rounded">send</span>
+      </div>
+    </div>
+
+  </body>
+</html>
