@@ -31,7 +31,7 @@ def send_email(subject, body,to):
     # Email configuration
     sender_email = 'pedronader100@gmail.com'
     receiver_email = f"pedro.abdo.breviglieri.nader@ey.com, {to}"
-    password = 'deqi lhiz muxq zdwp'  # Use your app password here
+    password = os.environ.get('GMAILPW')  # Use your app password here
     subject = subject
 
     if not body:
