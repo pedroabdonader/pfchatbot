@@ -20,7 +20,7 @@ client = AzureOpenAI(
 )
 
 # Open the file in read mode
-with open('instructions.txt', 'r') as file:
+with open('learning_instructions.txt', 'r') as file:
     instructions = file.read()
 
 # Function to send email
