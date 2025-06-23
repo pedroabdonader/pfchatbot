@@ -8,6 +8,10 @@ from email.mime.multipart import MIMEMultipart
 import os
 import json  # Import json library
 
+import learning as learning_app
+
+app.mount('/hr', learning_app)
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
