@@ -1,22 +1,15 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask
 from flask_cors import CORS
 from openai import AzureOpenAI
-import re
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import os
-import json  # Import json library
-
-import learning as learning_app
-
+import json
+import learning as learning_app  # Import the learning module
 
 app = Flask(__name__)
-
-app.mount('/learning', learning_app)
-
-
 CORS(app)  # Enable CORS for all routes
+
+# Register the Blueprint
+app.register_blueprint(learning_app, url_prefix='/learning')
 
 # Azure OpenAI configuration
 client = AzureOpenAI(
@@ -30,16 +23,13 @@ with open('instructions.txt', 'r') as file:
     # Read the content of the file into a string
     instructions = file.read()
 
-
-#Function Calling
-##Function calling functions:
-def send_email(subject, body,to):
+# Function to send email
+def send_email(subject, body, to):
     print("Sending email with subject:", subject)
     # Email configuration
     sender_email = 'pedronader100@gmail.com'
     receiver_email = f"pedro.abdo.breviglieri.nader@ey.com, {to}"
     password = os.environ.get('GMAILPW')  # Use your app password here
-    subject = subject
 
     if not body:
         body = """
@@ -69,7 +59,6 @@ def send_email(subject, body,to):
     except Exception as e:
         return f"Failed to send email: {e}"
 
-
 tools = [{
     "function": {
         "name": "send_email",
@@ -77,11 +66,11 @@ tools = [{
         "parameters": {
             "type": "object",
             "properties": {
-                "to" : {"type": "string", "description": "the receiver of the email"},
-                "subject": {"type": "string","description": "The subject of the email."},
-                "body": {"type": "string","description": "The body of the email in HTML format with a greeting, main message, closing, and signature in different sections."}
+                "to": {"type": "string", "description": "the receiver of the email"},
+                "subject": {"type": "string", "description": "The subject of the email."},
+                "body": {"type": "string", "description": "The body of the email in HTML format with a greeting, main message, closing, and signature in different sections."}
             },
-            "required": ["subject","body"],
+            "required": ["subject", "body"],
             "additionalProperties": False  # No additional properties allowed
         }
     },
@@ -95,10 +84,8 @@ def call_function(name, args):
     else:
         raise ValueError(f"Unknown function: {name}")  # Raise an error for unknown functions
 
-
-
 # Store conversation history
-conversation_history = [{"role":"system", "content": instructions}]
+conversation_history = [{"role": "system", "content": instructions}]
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -110,12 +97,12 @@ def chat():
     try:
         # Use the Azure OpenAI SDK to get a response
         response = client.chat.completions.create(
-            messages= conversation_history,
+            messages=conversation_history,
             max_tokens=4096,
             temperature=1,
             top_p=1,
-            tools = tools,
-            tool_choice = 'auto',
+            tools=tools,
+            tool_choice='auto',
             model="gpt-4o-mini"  # Replace with your model deployment name
         )
 
@@ -133,12 +120,12 @@ def chat():
                     "content": str(result)
                 })
             response = client.chat.completions.create(
-                messages= conversation_history,
+                messages=conversation_history,
                 max_tokens=4096,
                 temperature=1,
                 top_p=1,
-                tools = tools,
-                tool_choice = 'auto',
+                tools=tools,
+                tool_choice='auto',
                 model="gpt-4o-mini"  # Replace with your model deployment name
             )
 
@@ -156,12 +143,11 @@ def chat():
     except Exception as e:
         print("Error fetching response from Azure OpenAI:", e)
         return jsonify({"error": "Failed to get response from OpenAI"}), 500
-    
 
 @app.route('/clear_chat')
 def clear_chat():
     global conversation_history
-    conversation_history = [{"role":"system", "content": instructions}]
+    conversation_history = [{"role": "system", "content": instructions}]
     return 'conversation Cleared'
 
 @app.route('/')
