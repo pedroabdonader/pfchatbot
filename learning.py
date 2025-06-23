@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, Blueprint
+from flask import Blueprint, request, jsonify, render_template
 from flask_cors import CORS
 from openai import AzureOpenAI
 import re
@@ -20,14 +20,12 @@ client = AzureOpenAI(
 )
 
 # Open the file in read mode
-with open('learning_instructions.txt', 'r') as file:
-    # Read the content of the file into a string
+with open('instructions.txt', 'r') as file:
     instructions = file.read()
 
 # Function to send email
 def send_email(subject, body, to):
     print("Sending email with subject:", subject)
-    # Email configuration
     sender_email = 'pedronader100@gmail.com'
     receiver_email = f"pedro.abdo.breviglieri.nader@ey.com, {to}"
     password = os.environ.get('GMAILPW')  # Use your app password here
@@ -42,17 +40,15 @@ def send_email(subject, body, to):
         </html>
         """
 
-    # Create the email
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = receiver_email
     msg['Subject'] = subject
     msg.attach(MIMEText(body, 'html'))
 
-    # Send the email
     try:
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()  # Upgrade the connection to a secure encrypted SSL/TLS connection
+            server.starttls()
             server.login(sender_email, password)
             server.send_message(msg)
             print('email sent')
@@ -72,31 +68,26 @@ tools = [{
                 "body": {"type": "string", "description": "The body of the email in HTML format with a greeting, main message, closing, and signature in different sections."}
             },
             "required": ["subject", "body"],
-            "additionalProperties": False  # No additional properties allowed
+            "additionalProperties": False
         }
     },
     "type": "function"
 }]
 
-# Function to call the appropriate function based on the name
 def call_function(name, args):
-    if name == "send_email":  # Check if the function is send_email
-        return send_email(**args)  # Call send_email with the provided arguments
+    if name == "send_email":
+        return send_email(**args)
     else:
-        raise ValueError(f"Unknown function: {name}")  # Raise an error for unknown functions
+        raise ValueError(f"Unknown function: {name}")
 
-# Store conversation history
 conversation_history = [{"role": "system", "content": instructions}]
 
 @learning_app.route('/api/chat', methods=['POST'])
 def chat():
     user_message = request.json.get('message')
-
-    # Add the user's message to the conversation history
     conversation_history.append({"role": "user", "content": user_message})
 
     try:
-        # Use the Azure OpenAI SDK to get a response
         response = client.chat.completions.create(
             messages=conversation_history,
             max_tokens=4096,
@@ -104,13 +95,13 @@ def chat():
             top_p=1,
             tools=tools,
             tool_choice='auto',
-            model="gpt-4o-mini"  # Replace with your model deployment name
+            model="gpt-4o-mini"
         )
 
         if response.choices[0].message.tool_calls:
             print('identified function calling')
             for tool_call in response.choices[0].message.tool_calls:
-                conversation_history.append(response.choices[0].message)  # append model's function call message
+                conversation_history.append(response.choices[0].message)
                 name = tool_call.function.name
                 args = json.loads(tool_call.function.arguments)
 
@@ -127,13 +118,10 @@ def chat():
                 top_p=1,
                 tools=tools,
                 tool_choice='auto',
-                model="gpt-4o-mini"  # Replace with your model deployment name
+                model="gpt-4o-mini"
             )
 
-        # Extract the assistant's response
         bot_response = response.choices[0].message.content
-
-        # Add the bot's response to the conversation history
         conversation_history.append({"role": "assistant", "content": bot_response})
 
         formatted_response = bot_response.replace('\n', '<br>')
