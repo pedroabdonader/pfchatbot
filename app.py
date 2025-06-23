@@ -18,6 +18,7 @@ client = AzureOpenAI(
     azure_endpoint=os.environ.get('ENDPOINT'),  # Replace with your actual Azure endpoint
 )
 
+
 # Open the file in read mode
 with open('instructions.txt', 'r') as file:
     # Read the content of the file into a string
