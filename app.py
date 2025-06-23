@@ -10,9 +10,12 @@ import json  # Import json library
 
 import learning as learning_app
 
-app.mount('/learning', learning_app)
 
 app = Flask(__name__)
+
+app.mount('/learning', learning_app)
+
+
 CORS(app)  # Enable CORS for all routes
 
 # Azure OpenAI configuration
