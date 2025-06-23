@@ -4,6 +4,15 @@ from openai import AzureOpenAI
 import os
 import json
 from learning import learning_app  # Import the learning module
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
+from openai import AzureOpenAI
+import re
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import os
+import json  # Import json library
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
