@@ -3,7 +3,7 @@ from flask_cors import CORS
 from openai import AzureOpenAI
 import os
 import json
-import learning as learning_app  # Import the learning module
+from learning import learning_app  # Import the learning module
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
